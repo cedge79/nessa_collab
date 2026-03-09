@@ -377,7 +377,10 @@
     from { opacity: 0; transform: translateY(22px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-    
+    background: rgba(232,201,122,0.12);
+    padding: 1px 6px; border-radius: 4px;
+    font-family: monospace; font-size: 0.85em;
+  }
 </style>
 </head>
 <body>
@@ -496,9 +499,9 @@
   4. Copy your Public Key, Service ID, and Template ID here
 ═══════════════════════════════════════════════ -->
 <script>
-  const EMAILJS_PUBLIC_KEY  = "NvE2yhgwvWfouwBed";
-  const EMAILJS_SERVICE_ID  = "service_f0snb8a";
-  const EMAILJS_TEMPLATE_ID = "template_hsq47gb";
+  const EMAILJS_PUBLIC_KEY  = "NvE2yhgwvWfouwBed";   // ← replace
+  const EMAILJS_SERVICE_ID  = "service_f0snb8a";   // ← replace
+  const EMAILJS_TEMPLATE_ID = "template_hsq47gb";  // ← replace
 
   emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
 
