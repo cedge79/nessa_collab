@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Work With Nessa — Collab Enquiries</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:         #080806;
+    --surface:    #0f0e08;
+    --card:       #111009;
+    --border:     rgba(255,210,0,0.18);
+    --border-h:   rgba(255,210,0,0.6);
+    --gold:       #ffd200;
+    --gold-2:     #ffe94d;
+    --gold-3:     #b8940a;
+    --purple-1:   #ffd200;
+    --purple-2:   #ffe94d;
+    --purple-3:   #b8940a;
+    --text:       #fff8dc;
+    --muted:      #7a7040;
+    --error:      #ff5f5f;
+    --success:    #72e8b0;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── BACKGROUND ATMOSPHERE ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 80% 55% at 10% 5%,  rgba(255,210,0,0.14) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 50% at 90% 90%, rgba(255,180,0,0.10) 0%, transparent 55%),
+      radial-gradient(ellipse 35% 35% at 50% 50%, rgba(255,210,0,0.04) 0%, transparent 65%);
+    pointer-events: none;
+  }
+
+  /* noise grain */
+  body::after {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+    pointer-events: none;
+    opacity: 0.4;
+  }
+
+  .page {
+    position: relative; z-index: 1;
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 60px 24px 80px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    text-align: center;
+    margin-bottom: 52px;
+    animation: fadeUp 0.8s ease both;
+  }
+
+  .crown {
+    display: inline-block;
+    font-size: 28px;
+    margin-bottom: 16px;
+    filter: drop-shadow(0 0 20px rgba(255,210,0,1.0));
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50%      { transform: translateY(-6px); }
+  }
+
+  .header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-weight: 400;
+    font-size: clamp(3rem, 9vw, 5rem);
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+
+  .header h1 em {
+    font-style: italic;
+    background: linear-gradient(135deg, var(--gold), var(--gold-2) 60%, #fff8a0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .header p {
+    margin-top: 14px;
+    font-size: 0.92rem;
+    color: var(--muted);
+    font-weight: 300;
+    letter-spacing: 0.02em;
+    line-height: 1.7;
+  }
+
+  .divider {
+    display: flex; align-items: center; gap: 14px;
+    margin: 28px auto 0;
+    max-width: 260px;
+  }
+  .divider::before, .divider::after {
+    content: ''; flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,210,0,0.5), transparent);
+  }
+  .divider span {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    opacity: 0.8;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-top: 2px solid var(--gold);
+    border-radius: 20px;
+    padding: 44px 40px 40px;
+    position: relative;
+    animation: fadeUp 0.9s 0.15s ease both;
+    backdrop-filter: blur(8px);
+    box-shadow: 0 0 60px rgba(255,210,0,0.04), 0 2px 0 var(--gold);
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    inset: 0; border-radius: 20px;
+    background: linear-gradient(135deg, rgba(255,210,0,0.05) 0%, transparent 55%);
+    pointer-events: none;
+  }
+
+  @media (max-width: 520px) {
+    .card { padding: 32px 22px 28px; }
+  }
+
+  /* ── FORM ELEMENTS ── */
+  .row-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  @media (max-width: 500px) {
+    .row-2 { grid-template-columns: 1fr; }
+  }
+
+  .field {
+    margin-bottom: 22px;
+  }
+
+  label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  label .req { color: var(--gold); margin-left: 2px; }
+
+  input, select, textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 13px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.93rem;
+    font-weight: 300;
+    color: var(--text);
+    transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
+    outline: none;
+    -webkit-appearance: none;
+  }
+
+  input::placeholder, textarea::placeholder {
+    color: var(--muted);
+    opacity: 0.7;
+  }
+
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--gold);
+    background: rgba(255,210,0,0.06);
+    box-shadow: 0 0 0 3px rgba(255,210,0,0.12);
+  }
+
+  input.error, select.error, textarea.error {
+    border-color: var(--error);
+    box-shadow: 0 0 0 3px rgba(255,107,138,0.1);
+  }
+
+  select option { background: #111009; color: var(--text); }
+
+  textarea { resize: vertical; min-height: 110px; line-height: 1.6; }
+
+  .field-error {
+    font-size: 0.75rem;
+    color: var(--error);
+    margin-top: 5px;
+    display: none;
+  }
+  .field-error.show { display: block; }
+
+  /* ── BUDGET PILLS ── */
+  .pill-group {
+    display: flex; flex-wrap: wrap; gap: 9px;
+    margin-top: 2px;
+  }
+
+  .pill {
+    cursor: pointer;
+  }
+
+  .pill input[type="radio"] { display: none; }
+
+  .pill span {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 100px;
+    border: 1px solid var(--border);
+    font-size: 0.82rem;
+    font-weight: 400;
+    color: var(--muted);
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .pill input:checked + span {
+    border-color: var(--gold);
+    background: rgba(240,192,32,0.12);
+    color: var(--gold);
+    box-shadow: 0 0 0 1px rgba(240,192,32,0.4);
+  }
+
+  .pill span:hover { border-color: rgba(240,192,32,0.4); color: var(--text); }
+
+  /* ── SUBMIT BUTTON ── */
+  .btn-wrap { margin-top: 32px; }
+
+  .btn {
+    width: 100%;
+    padding: 16px 24px;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s, box-shadow 0.2s;
+    background: linear-gradient(135deg, #a87c00 0%, var(--gold) 50%, var(--gold-2) 100%);
+    color: #fff;
+    box-shadow: 0 4px 24px rgba(150,100,0,0.4);
+  }
+
+  .btn::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(150,100,0,0.55); }
+  .btn:hover::before { opacity: 1; }
+  .btn:active { transform: translateY(0); }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .btn-inner { display: flex; align-items: center; justify-content: center; gap: 10px; }
+
+  .btn-icon { font-size: 1.1em; }
+
+  /* spinner */
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+  .btn.loading .spinner { display: block; }
+  .btn.loading .btn-text { display: none; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── SUCCESS STATE ── */
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 20px 10px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .success-screen.show { display: block; }
+
+  .success-icon {
+    font-size: 52px;
+    margin-bottom: 20px;
+    display: inline-block;
+    animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+
+  .success-screen h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.8rem;
+    font-weight: 400;
+    margin-bottom: 12px;
+    background: linear-gradient(135deg, var(--gold), var(--purple-2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .success-screen p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 340px;
+    margin: 0 auto;
+  }
+
+  /* ── FOOTER NOTE ── */
+  .footer-note {
+    text-align: center;
+    margin-top: 28px;
+    font-size: 0.75rem;
+    color: var(--muted);
+    opacity: 0.6;
+    animation: fadeUp 1s 0.3s ease both;
+  }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: rgba(255,210,0,0.45);
+    margin: 28px 0 18px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .section-label::after {
+    content: ''; flex: 1; height: 1px;
+    background: var(--border);
+  }
+
+  /* ── ANIMATION ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── EMAILJS SETUP NOTICE ── */
+  .setup-banner {
+    background: rgba(232,201,122,0.08);
+    border: 1px solid rgba(232,201,122,0.25);
+    border-radius: 10px;
+    padding: 14px 18px;
+    margin-bottom: 28px;
+    font-size: 0.8rem;
+    color: rgba(232,201,122,0.85);
+    line-height: 1.6;
+    animation: fadeUp 0.7s 0.05s ease both;
+  }
+  .setup-banner strong { color: var(--gold); }
+  .setup-banner code {
+    background: rgba(232,201,122,0.12);
+    padding: 1px 6px; border-radius: 4px;
+    font-family: monospace; font-size: 0.85em;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="crown">⚡</div>
+    <h1>Work With <em>Nessa</em></h1>
+    <p>Got a collaboration in mind? Fill in the form below<br>and I'll get back to you within 48 hours. Based in General Santos City, Philippines.</p>
+    <div class="divider"><span>collab enquiries</span></div>
+  </div>
+
+  <!-- SETUP NOTICE (remove this once EmailJS is configured) -->
+  <div class="setup-banner" id="setupBanner">
+    <strong>⚙️ Setup required:</strong> Replace <code>YOUR_PUBLIC_KEY</code>, <code>YOUR_SERVICE_ID</code>, and <code>YOUR_TEMPLATE_ID</code> near the bottom of this file with your EmailJS credentials. See instructions below the form.
+  </div>
+
+  <!-- FORM CARD -->
+  <div class="card" id="formCard">
+    <form id="collabForm" novalidate>
+
+      <div class="section-label">Your details</div>
+
+      <div class="row-2">
+        <div class="field">
+          <label>Your Name <span class="req">*</span></label>
+          <input type="text" id="from_name" placeholder="e.g. Sophie Tan" autocomplete="name"/>
+          <div class="field-error" id="err-from_name">Please enter your name</div>
+        </div>
+        <div class="field">
+          <label>Your Email <span class="req">*</span></label>
+          <input type="email" id="reply_to" placeholder="you@brand.com" autocomplete="email"/>
+          <div class="field-error" id="err-reply_to">Please enter a valid email</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Brand / Company Name <span class="req">*</span></label>
+        <input type="text" id="brand_name" placeholder="e.g. GlowUp Beauty"/>
+        <div class="field-error" id="err-brand_name">Please enter your brand name</div>
+      </div>
+
+      <div class="section-label">Collaboration details</div>
+
+      <div class="row-2">
+        <div class="field">
+          <label>Type of Collaboration <span class="req">*</span></label>
+          <select id="collab_type">
+            <option value="" disabled selected>Select type…</option>
+            <option>Sponsored Post</option>
+            <option>Paid Partnership</option>
+            <option>Gifted / PR</option>
+            <option>Affiliate</option>
+            <option>Brand Ambassador</option>
+            <option>Event / Appearance</option>
+            <option>Other</option>
+          </select>
+          <div class="field-error" id="err-collab_type">Please select a collab type</div>
+        </div>
+        <div class="field">
+          <label>Deadline / Timeline</label>
+          <input type="text" id="deadline" placeholder="e.g. End of March 2026"/>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>Budget Range <span class="req">*</span></label>
+        <div class="pill-group" id="budget-pills">
+          <label class="pill"><input type="radio" name="budget" value="Gifted only"/><span>Gifted only</span></label>
+          <label class="pill"><input type="radio" name="budget" value="Under ₱5,000"/><span>Under ₱5k</span></label>
+          <label class="pill"><input type="radio" name="budget" value="₱5,000–₱15,000"/><span>₱5k–₱15k</span></label>
+          <label class="pill"><input type="radio" name="budget" value="₱15,000–₱30,000"/><span>₱15k–₱30k</span></label>
+          <label class="pill"><input type="radio" name="budget" value="₱30,000–₱50,000"/><span>₱30k–₱50k</span></label>
+          <label class="pill"><input type="radio" name="budget" value="₱50,000+"/><span>₱50k+</span></label>
+          <label class="pill"><input type="radio" name="budget" value="Open to discussion"/><span>Open to discuss</span></label>
+        </div>
+        <div class="field-error" id="err-budget">Please select a budget range</div>
+      </div>
+
+      <div class="field">
+        <label>Message / Brief <span class="req">*</span></label>
+        <textarea id="message" placeholder="Tell me about your brand, the campaign idea, platforms you have in mind, and anything else that would help me understand the opportunity…"></textarea>
+        <div class="field-error" id="err-message">Please include a brief message</div>
+      </div>
+
+      <div class="btn-wrap">
+        <button type="submit" class="btn" id="submitBtn">
+          <div class="btn-inner">
+            <div class="spinner"></div>
+            <span class="btn-text"><span class="btn-icon">⚡</span> Send Enquiry</span>
+          </div>
+        </button>
+      </div>
+
+    </form>
+
+    <!-- SUCCESS -->
+    <div class="success-screen" id="successScreen">
+      <div class="success-icon">✨</div>
+      <h2>Enquiry Sent!</h2>
+      <p>Thank you for reaching out. Nessa will review your brief and get back to you within 48 hours. Based in General Santos City, Philippines. Keep an eye on your inbox!</p>
+    </div>
+  </div>
+
+  <div class="footer-note">All enquiries are read personally · Based in General Santos City, Philippines · Response within 48 hours</div>
+
+</div><!-- /page -->
+
+<!-- ══════════════════════════════════════════════
+  EMAILJS — replace the three values below
+  1. Sign up free at emailjs.com
+  2. Add an Email Service (Gmail works great)
+  3. Create an Email Template — use these variables:
+       {{from_name}}  {{reply_to}}  {{brand_name}}
+       {{collab_type}}  {{budget}}  {{deadline}}  {{message}}
+  4. Copy your Public Key, Service ID, and Template ID here
+═══════════════════════════════════════════════ -->
+<script>
+  const EMAILJS_PUBLIC_KEY  = "NvE2yhgwvWfouwBed";   // ← replace
+  const EMAILJS_SERVICE_ID  = "service_f0snb8a";   // ← replace
+  const EMAILJS_TEMPLATE_ID = "template_hsq47gb";  // ← replace
+
+  emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
+
+  // ── VALIDATION ────────────────────────────────
+  function validateEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+  function setError(id, show) {
+    const input = document.getElementById(id);
+    const err   = document.getElementById("err-" + id);
+    if (!input || !err) return;
+    if (show) { input.classList.add("error"); err.classList.add("show"); }
+    else       { input.classList.remove("error"); err.classList.remove("show"); }
+  }
+
+  function validate() {
+    let ok = true;
+    const name  = document.getElementById("from_name").value.trim();
+    const email = document.getElementById("reply_to").value.trim();
+    const brand = document.getElementById("brand_name").value.trim();
+    const type  = document.getElementById("collab_type").value;
+    const msg   = document.getElementById("message").value.trim();
+    const budget = document.querySelector('input[name="budget"]:checked');
+
+    setError("from_name",  !name);
+    setError("reply_to",   !email || !validateEmail(email));
+    setError("brand_name", !brand);
+    setError("collab_type",!type);
+    setError("message",    !msg);
+
+    const budgetErr = document.getElementById("err-budget");
+    if (!budget) { budgetErr.classList.add("show"); ok = false; }
+    else           budgetErr.classList.remove("show");
+
+    if (!name || !brand || !type || !msg) ok = false;
+    if (!email || !validateEmail(email))  ok = false;
+    return ok;
+  }
+
+  // ── SUBMIT ────────────────────────────────────
+  document.getElementById("collabForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    if (!validate()) return;
+
+    const btn = document.getElementById("submitBtn");
+    btn.classList.add("loading");
+    btn.disabled = true;
+
+    const params = {
+      from_name:   document.getElementById("from_name").value.trim(),
+      reply_to:    document.getElementById("reply_to").value.trim(),
+      brand_name:  document.getElementById("brand_name").value.trim(),
+      collab_type: document.getElementById("collab_type").value,
+      budget:      document.querySelector('input[name="budget"]:checked')?.value || "Not specified",
+      deadline:    document.getElementById("deadline").value.trim() || "Not specified",
+      message:     document.getElementById("message").value.trim(),
+    };
+
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params);
+      document.getElementById("collabForm").style.display = "none";
+      document.getElementById("successScreen").classList.add("show");
+      document.getElementById("setupBanner").style.display = "none";
+    } catch (err) {
+      console.error("EmailJS error:", err);
+      alert("Something went wrong sending your message. Please try emailing directly.");
+    } finally {
+      btn.classList.remove("loading");
+      btn.disabled = false;
+    }
+  });
+
+  // Clear errors on input
+  ["from_name","reply_to","brand_name","collab_type","message"].forEach(id => {
+    document.getElementById(id)?.addEventListener("input", () => setError(id, false));
+  });
+</script>
+</body>
+</html>
