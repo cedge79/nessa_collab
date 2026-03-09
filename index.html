@@ -377,21 +377,6 @@
     from { opacity: 0; transform: translateY(22px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-
-  /* ── EMAILJS SETUP NOTICE ── */
-  .setup-banner {
-    background: rgba(232,201,122,0.08);
-    border: 1px solid rgba(232,201,122,0.25);
-    border-radius: 10px;
-    padding: 14px 18px;
-    margin-bottom: 28px;
-    font-size: 0.8rem;
-    color: rgba(232,201,122,0.85);
-    line-height: 1.6;
-    animation: fadeUp 0.7s 0.05s ease both;
-  }
-  .setup-banner strong { color: var(--gold); }
-  .setup-banner code {
     background: rgba(232,201,122,0.12);
     padding: 1px 6px; border-radius: 4px;
     font-family: monospace; font-size: 0.85em;
@@ -409,9 +394,6 @@
     <div class="divider"><span>collab enquiries</span></div>
   </div>
 
-  <!-- SETUP NOTICE (remove this once EmailJS is configured) -->
-  <div class="setup-banner" id="setupBanner">
-    <strong>⚙️ Setup required:</strong> Replace <code>YOUR_PUBLIC_KEY</code>, <code>YOUR_SERVICE_ID</code>, and <code>YOUR_TEMPLATE_ID</code> near the bottom of this file with your EmailJS credentials. See instructions below the form.
   </div>
 
   <!-- FORM CARD -->
@@ -434,8 +416,8 @@
       </div>
 
       <div class="field">
-        <label>Brand / Company Name <span class="req">*</span></label>
-        <input type="text" id="brand_name" placeholder="e.g. GlowUp Beauty"/>
+        <label>Brand / Company / Creator Name <span class="req">*</span></label>
+        <input type="text" id="brand_name" placeholder="e.g. GlowUp Beauty or @yourcreatorhandle"/>
         <div class="field-error" id="err-brand_name">Please enter your brand name</div>
       </div>
 
@@ -449,6 +431,8 @@
             <option>Sponsored Post</option>
             <option>Paid Partnership</option>
             <option>Gifted / PR</option>
+            <option>Creator Collab / Duet</option>
+            <option>Shoutout Exchange</option>
             <option>Affiliate</option>
             <option>Brand Ambassador</option>
             <option>Event / Appearance</option>
@@ -515,9 +499,9 @@
   4. Copy your Public Key, Service ID, and Template ID here
 ═══════════════════════════════════════════════ -->
 <script>
-  const EMAILJS_PUBLIC_KEY  = "NvE2yhgwvWfouwBed";   // ← replace
-  const EMAILJS_SERVICE_ID  = "service_f0snb8a";   // ← replace
-  const EMAILJS_TEMPLATE_ID = "template_hsq47gb";  // ← replace
+  const EMAILJS_PUBLIC_KEY  = "NvE2yhgwvWfouwBed";
+  const EMAILJS_SERVICE_ID  = "service_f0snb8a";
+  const EMAILJS_TEMPLATE_ID = "template_hsq47gb";
 
   emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
 
@@ -579,7 +563,6 @@
       await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, params);
       document.getElementById("collabForm").style.display = "none";
       document.getElementById("successScreen").classList.add("show");
-      document.getElementById("setupBanner").style.display = "none";
     } catch (err) {
       console.error("EmailJS error:", err);
       alert("Something went wrong sending your message. Please try emailing directly.");
